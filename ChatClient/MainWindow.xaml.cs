@@ -20,9 +20,9 @@ namespace ChatClient
             if (!isConnected)
             {
                 client = new ServiceChatClient(new InstanceContext(this));
-                id = client.Connect(tbUserName.Text);
-                tbUserName.IsEnabled = false;
-                bConnDicon.Content = "Disconnect";
+                id = client.Connect(textboxUserName.Text);
+                textboxUserName.IsEnabled = false;
+                btnConnectDisconnect.Content = "Disconnect";
                 isConnected = true;
             }
         }
@@ -33,8 +33,8 @@ namespace ChatClient
             {
                 client.Disconnect(id);
                 client = null;
-                tbUserName.IsEnabled = true;
-                bConnDicon.Content = "Connect";
+                textboxUserName.IsEnabled = true;
+                btnConnectDisconnect.Content = "Connect";
                 isConnected = false;
             }
         }
@@ -46,10 +46,10 @@ namespace ChatClient
 
         }
 
-        public void MessageCallback(string message)
+        void IServiceChatCallback.MessageCallback(string message)
         {
-            lbChat.Items.Add(message);
-            lbChat.ScrollIntoView(lbChat.Items[lbChat.Items.Count - 1]);
+            labelChat.Items.Add(message);
+            labelChat.ScrollIntoView(labelChat.Items[labelChat.Items.Count - 1]);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -63,8 +63,8 @@ namespace ChatClient
             {
                 if (client != null)
                 {
-                    client.SendMessage(tbMessage.Text, id);
-                    tbMessage.Text = string.Empty;
+                    client.SendMessage(textboxMessage.Text, id);
+                    textboxMessage.Text = string.Empty;
                 }
             }
         }

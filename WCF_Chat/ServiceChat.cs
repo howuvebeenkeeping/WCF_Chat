@@ -11,8 +11,8 @@ namespace WCF_Chat
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class ServiceChat : IServiceChat
     {
-        List<ServerUser> users = new List<ServerUser>();
-        int nextId = 1;
+        private List<ServerUser> users = new List<ServerUser>();
+        private int nextId = 1;
 
         public int Connect(string name)
         {
@@ -24,7 +24,7 @@ namespace WCF_Chat
             };
             nextId++;
 
-            SendMessage(": " + user.Name + " подключился к чату!", 0);
+            SendMessage(" " + user.Name + " has connected.", 0);
 
             users.Add(user);
 
@@ -34,10 +34,11 @@ namespace WCF_Chat
         public void Disconnect(int id)
         {
             var user = users.FirstOrDefault(i => i.Id == id);
+
             if (user != null)
             {
                 users.Remove(user);
-                SendMessage(": " + user.Name + " покинул чат!", 0);
+                SendMessage(" " + user.Name + " has left.", 0);
             }
         }
 
@@ -45,12 +46,12 @@ namespace WCF_Chat
         {
             foreach (var item in users)
             {
-                string answer = DateTime.Now.ToShortTimeString();
+                string answer = $"[{DateTime.Now.ToShortTimeString()}]";
 
                 var user = users.FirstOrDefault(i => i.Id == id);
 
                 if (user != null)
-                    answer += ": " + user.Name + " ";
+                    answer += " " + user.Name + ": ";
 
                 answer += message;
                 item.OperationContext.GetCallbackChannel<IServerChatCallback>().MessageCallback(answer);
