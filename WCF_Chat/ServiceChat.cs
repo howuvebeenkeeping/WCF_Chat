@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
@@ -10,19 +11,48 @@ namespace WCF_Chat
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class ServiceChat : IServiceChat
     {
-        public void Connect()
+        private List<ServerUser> users = new List<ServerUser>();
+        private int nextId = 1;
+        public int Connect(string name)
         {
-            throw new NotImplementedException();
+            ServerUser user = new ServerUser
+            {
+                Id = nextId,
+                Name = name,
+                OperationContext = OperationContext.Current
+            };
+            nextId++;
+            users.Add(user);
+
+            SendMessage($"{user.Name} подключился к чату", 0);
+
+            return user.Id;
         }
 
         public void Disconnect(int id)
         {
-            throw new NotImplementedException();
+            var user = users.Find(x => x.Id == id);
+            if (user != null)
+            {
+                users.Remove(user);
+                SendMessage($"{user.Name} отключился от чата", 0);
+            }
         }
 
-        public void SendMessage(string message)
+        public void SendMessage(string message, int id)
         {
-            throw new NotImplementedException();
+            foreach (var user in users)
+            {
+                string answer = DateTime.Now.ToShortTimeString();
+                var sender = users.Find(x => x.Id == id);
+                if (sender != null)
+                    answer += ": " + user.Name + " ";
+
+                answer += message;
+
+                user.OperationContext.GetCallbackChannel<IServerChatCallback>().MessageCallback(answer);
+            }
+
         }
     }
 }
