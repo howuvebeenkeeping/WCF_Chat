@@ -18,13 +18,12 @@ namespace WCF_Chat
         void Disconnect(int id);
 
         [OperationContract(IsOneWay = true)]
-        void SendMsg(string msg, int id);
-
+        void SendMessage(string message, int id);
     }
 
     public interface IServerChatCallback
     {
         [OperationContract(IsOneWay = true)]
-        void MsgCallback(string msg);
+        void MessageCallback(string message);
     }
 }

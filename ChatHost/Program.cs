@@ -14,7 +14,7 @@ namespace ChatHost
             using (var host = new ServiceHost(typeof(WCF_Chat.ServiceChat)))
             {
                 host.Open();
-                Console.WriteLine("Хост стартовал!");
+                Console.WriteLine("Host is working...");
                 Console.ReadLine();
             }
         }

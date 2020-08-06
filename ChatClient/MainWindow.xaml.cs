@@ -1,78 +1,54 @@
 ﻿using ChatClient.ServiceChat;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.ServiceModel;
 
 namespace ChatClient
 {
     public partial class MainWindow : Window, IServiceChatCallback
     {
-        bool isConnected = false;
-        ServiceChatClient client;
-        int ID;
+        private bool isConnected = false;
+        private ServiceChatClient client;
+        private int id;
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        void ConnectUser()
+        private void ConnectUser()
         {
             if (!isConnected)
             {
-                client = new ServiceChatClient(new System.ServiceModel.InstanceContext(this));
-                ID = client.Connect(tbUserName.Text);
+                client = new ServiceChatClient(new InstanceContext(this));
+                id = client.Connect(tbUserName.Text);
                 tbUserName.IsEnabled = false;
                 bConnDicon.Content = "Disconnect";
                 isConnected = true;
             }
         }
 
-        void DisconnectUser()
+        private void DisconnectUser()
         {
             if (isConnected)
             {
-                client.Disconnect(ID);
+                client.Disconnect(id);
                 client = null;
                 tbUserName.IsEnabled = true;
                 bConnDicon.Content = "Connect";
                 isConnected = false;
             }
-
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (isConnected)
-            {
-                DisconnectUser();
-            }
-            else
-            {
-                ConnectUser();
-            }
+            if (isConnected) DisconnectUser();
+            else ConnectUser();
 
         }
 
-        public void MsgCallback(string msg)
+        public void MessageCallback(string message)
         {
-            lbChat.Items.Add(msg);
+            lbChat.Items.Add(message);
             lbChat.ScrollIntoView(lbChat.Items[lbChat.Items.Count - 1]);
         }
 
@@ -87,7 +63,7 @@ namespace ChatClient
             {
                 if (client != null)
                 {
-                    client.SendMsg(tbMessage.Text, ID);
+                    client.SendMessage(tbMessage.Text, id);
                     tbMessage.Text = string.Empty;
                 }
             }
